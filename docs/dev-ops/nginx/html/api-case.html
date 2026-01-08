@@ -1,0 +1,538 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+  <meta charset="UTF-8" />
+  <title>简单 AI 对话</title>
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <script src="https://cdn.tailwindcss.com"></script>
+</head>
+<body class="min-h-screen bg-slate-100">
+  <div class="flex flex-col h-screen">
+    <header class="h-14 px-6 border-b border-slate-200 bg-white flex items-center justify-between">
+      <div class="flex items-center space-x-4 text-sm text-slate-700">
+        <button id="sidebarToggle" class="p-1 rounded hover:bg-slate-100">
+          <span class="text-2xl leading-none">≡</span>
+        </button>
+        <button class="px-4 py-2 rounded-md border border-slate-200 bg-slate-50 hover:bg-slate-100 text-sm font-semibold">
+          + 新聊天
+        </button>
+        <div class="flex items-center space-x-2">
+          <span class="text-xs text-slate-500">模型</span>
+          <select
+            id="modelSelect"
+            class="h-9 min-w-[180px] rounded-md border border-slate-300 bg-white px-3 text-sm text-slate-700 focus:outline-none focus:ring-2 focus:ring-indigo-500"
+          >
+            <option value="deepseek-r1:1.5b">deepseek-r1:1.5b</option>
+          </select>
+        </div>
+        <div class="flex items-center space-x-2">
+          <span class="text-xs text-slate-500">知识库</span>
+          <select
+            id="ragTagSelect"
+            class="h-9 min-w-[200px] rounded-md border border-slate-300 bg-white px-3 text-sm text-slate-700 focus:outline-none focus:ring-2 focus:ring-emerald-500"
+          >
+            <option value="" disabled selected>选择一个知识库</option>
+          </select>
+        </div>
+      </div>
+      <div class="flex items-center space-x-2 text-sm text-slate-500">
+        <input id="kbFiles" type="file" multiple class="hidden" />
+        <button
+          id="uploadKbBtn"
+          type="button"
+          class="px-3 py-1 rounded-md border border-slate-300 bg-white text-xs text-slate-700 hover:bg-slate-50 disabled:opacity-60 disabled:cursor-not-allowed"
+        >
+          上传知识库
+        </button>
+      </div>
+    </header>
+
+    <div class="flex flex-1">
+      <aside id="sidebar" class="w-56 bg-white border-r border-slate-200 flex flex-col transition-all duration-200">
+        <div class="px-3 py-4 flex items-center justify-center">
+          <span id="sidebarIcon" class="text-lg">💬</span>
+          <span id="sidebarTitle" class="ml-2 text-base font-semibold text-slate-800">聊天列表</span>
+        </div>
+        <div class="flex-1"></div>
+      </aside>
+
+      <div class="flex-1 flex flex-col">
+        <main class="flex-1 flex flex-col bg-slate-50">
+        <div id="chatContainer" class="flex-1 overflow-y-auto px-6 py-6">
+        </div>
+
+        <footer class="border-t border-slate-200 bg-white px-6 py-3">
+          <form id="chatForm" class="flex items-center space-x-3">
+            <input
+              id="messageInput"
+              type="text"
+              class="flex-1 border border-slate-300 rounded-full px-4 py-2.5 text-sm focus:outline-none focus:ring-2 focus:ring-indigo-500"
+              placeholder="输入一条对话..."
+            />
+            <button
+              id="sendButton"
+              type="submit"
+              class="px-4 py-2 text-sm font-medium rounded-md bg-indigo-600 text-white hover:bg-indigo-700 disabled:opacity-60 disabled:cursor-not-allowed"
+            >
+              提交
+            </button>
+          </form>
+        </footer>
+      </div>
+    </div>
+  </div>
+
+  <div
+    id="kbModal"
+    class="fixed inset-0 z-50 hidden bg-black/40 items-center justify-center"
+  >
+    <div
+      id="kbAlert"
+      class="absolute top-10 left-1/2 -translate-x-1/2 px-4 py-2 rounded-md text-sm shadow hidden"
+    ></div>
+    <div class="bg-white rounded-xl shadow-xl w-full max-w-md">
+      <div class="px-6 pt-6 pb-4 flex items-center justify-between">
+        <div class="flex-1 text-center text-lg font-semibold text-slate-800">
+          上传知识库
+        </div>
+        <button
+          id="kbModalClose"
+          type="button"
+          class="ml-2 text-slate-400 hover:text-slate-600"
+        >
+          ×
+        </button>
+      </div>
+      <div class="px-6 pb-4 space-y-4">
+        <div class="text-sm text-slate-700">知识库名称</div>
+        <input
+          id="ragTagModalInput"
+          type="text"
+          class="w-full border border-slate-300 rounded-md px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-emerald-500"
+          placeholder="请输入知识库名称"
+        />
+        <div class="text-sm text-slate-700">上传文件</div>
+        <div
+          id="kbDropArea"
+          class="mt-1 border-2 border-dashed border-slate-300 rounded-md px-4 py-6 text-center text-xs text-slate-500 cursor-pointer hover:border-emerald-500 hover:text-emerald-600 bg-slate-50"
+        >
+          <div id="kbDropText">将文件拖到此处或点击上传</div>
+          <div class="mt-1 text-[11px] text-slate-400">
+            支持的文件类型：.pdf, .csv, .txt, .md, .sql, .java
+          </div>
+        </div>
+      </div>
+      <div class="px-6 pb-6 flex justify-center">
+        <button
+          id="kbModalSubmit"
+          type="button"
+          class="px-4 py-2 rounded-md bg-indigo-600 text-white text-sm hover:bg-indigo-700 disabled:opacity-60 disabled:cursor-not-allowed"
+        >
+          开始上传
+        </button>
+      </div>
+    </div>
+  </div>
+
+  <script>
+    const apiBase = "http://localhost:8090/api/v1/ollama/generate_stream";
+    const chatContainer = document.getElementById("chatContainer");
+    const chatForm = document.getElementById("chatForm");
+    const messageInput = document.getElementById("messageInput");
+    const sendButton = document.getElementById("sendButton");
+    const modelSelect = document.getElementById("modelSelect");
+    const uploadUrl = "http://localhost:8090/api/v1/rag/file/upload";
+    const ragTagListUrl = "http://localhost:8090/api/v1/rag/query_rag_tag_list";
+    const uploadInput = document.getElementById("kbFiles");
+    const uploadButton = document.getElementById("uploadKbBtn");
+    const ragTagSelect = document.getElementById("ragTagSelect");
+    const kbModal = document.getElementById("kbModal");
+    const kbModalClose = document.getElementById("kbModalClose");
+    const kbModalNameInput = document.getElementById("ragTagModalInput");
+    const kbModalSubmit = document.getElementById("kbModalSubmit");
+    const kbDropArea = document.getElementById("kbDropArea");
+    const kbDropText = document.getElementById("kbDropText");
+    const kbAlert = document.getElementById("kbAlert");
+    const sidebar = document.getElementById("sidebar");
+    const sidebarToggle = document.getElementById("sidebarToggle");
+    const sidebarTitle = document.getElementById("sidebarTitle");
+
+    let ragTagLoaded = false;
+
+    function closeKbModal() {
+      if (kbModal) {
+        kbModal.classList.add("hidden");
+        kbModal.classList.remove("flex");
+      }
+      if (uploadInput) {
+        uploadInput.value = "";
+      }
+      if (kbDropText) {
+        kbDropText.textContent = "将文件拖到此处或点击上传";
+      }
+      if (kbModalNameInput) {
+        kbModalNameInput.value = "";
+      }
+      if (kbAlert) {
+        kbAlert.classList.add("hidden");
+      }
+    }
+
+    function loadRagTags() {
+      if (ragTagLoaded || !ragTagSelect) {
+        return;
+      }
+
+      fetch(ragTagListUrl, {
+        method: "GET"
+      })
+        .then(function (res) {
+          if (!res.ok) {
+            throw new Error("load failed");
+          }
+          return res.json();
+        })
+        .then(function (data) {
+          const list =
+            data && data.code === "0" && Array.isArray(data.data) ? data.data : [];
+
+          ragTagSelect.innerHTML = "";
+
+          const placeholder = document.createElement("option");
+          placeholder.value = "";
+          placeholder.disabled = true;
+          placeholder.selected = true;
+          placeholder.textContent = "选择一个知识库";
+          ragTagSelect.appendChild(placeholder);
+
+          list.forEach(function (name) {
+            const opt = document.createElement("option");
+            opt.value = name;
+            opt.textContent = name;
+            ragTagSelect.appendChild(opt);
+          });
+
+          ragTagLoaded = true;
+        })
+        .catch(function () {});
+    }
+
+    let currentEventSource = null;
+    let currentAssistantBubble = null;
+    let rawAssistantText = "";
+
+    function escapeHtml(str) {
+      return str
+        .replace(/&/g, "&amp;")
+        .replace(/</g, "&lt;")
+        .replace(/>/g, "&gt;");
+    }
+
+    function renderMarkdown(text) {
+      if (!text) return "";
+      let html = escapeHtml(text);
+      html = html.replace(/(\r\n|\n|\r)/g, "<br>");
+      html = html.replace(/\*\*(.+?)\*\*/g, "<strong class=\"font-semibold\">$1</strong>");
+      html = html.replace(/`([^`]+?)`/g, "<code class=\"px-1 py-0.5 rounded bg-slate-200 text-xs font-mono text-slate-800\">$1</code>");
+      html = html.replace(/\*(.+?)\*/g, "<em class=\"italic\">$1</em>");
+      return html;
+    }
+
+    function filterThinkBlocks(text) {
+      const hasOpen = text.indexOf("<think>") !== -1;
+      const hasClose = text.indexOf("</think>") !== -1;
+
+      if (hasOpen && !hasClose) {
+        return "";
+      }
+
+      if (!hasOpen && hasClose) {
+        let withoutHead = text.replace(/^[\s\S]*?<\/think>/, "");
+        return withoutHead.replace(/^\s+/, "");
+      }
+
+      if (hasOpen && hasClose) {
+        let withoutBlock = text.replace(/<think>[\s\S]*?<\/think>/, "");
+        return withoutBlock.replace(/^\s+/, "");
+      }
+
+      return text;
+    }
+
+    function appendMessage(role, text) {
+      const wrapper = document.createElement("div");
+      wrapper.className = "flex w-full";
+      if (role === "user") {
+        wrapper.classList.add("justify-end");
+      } else {
+        wrapper.classList.add("justify-start");
+      }
+
+      const bubbleWrapper = document.createElement("div");
+      bubbleWrapper.className = "relative group";
+
+      const bubble = document.createElement("div");
+      if (role === "user") {
+        bubble.className = "max-w-[80%] rounded-2xl px-3 py-2 bg-indigo-600 text-white text-sm whitespace-pre-wrap";
+        bubble.textContent = text || "";
+      } else {
+        bubble.className = "max-w-[80%] rounded-2xl px-3 py-2 bg-slate-200 text-slate-900 text-sm";
+        bubble.innerHTML = renderMarkdown(text || "");
+      }
+
+      const copyBtn = document.createElement("button");
+      copyBtn.type = "button";
+      copyBtn.className = "absolute -top-2 -right-2 opacity-0 group-hover:opacity-100 transition-opacity bg-slate-800 text-white text-[10px] px-1.5 py-0.5 rounded shadow";
+      copyBtn.textContent = "复制";
+      copyBtn.addEventListener("click", function (e) {
+        e.stopPropagation();
+        const textToCopy = bubble.innerText || "";
+        if (textToCopy && navigator.clipboard && navigator.clipboard.writeText) {
+          navigator.clipboard.writeText(textToCopy);
+        }
+      });
+
+      bubbleWrapper.appendChild(bubble);
+      bubbleWrapper.appendChild(copyBtn);
+      wrapper.appendChild(bubbleWrapper);
+      chatContainer.appendChild(wrapper);
+      chatContainer.scrollTop = chatContainer.scrollHeight;
+
+      return bubble;
+    }
+
+    function updateAssistantBubble(textChunk) {
+      if (!currentAssistantBubble) {
+        currentAssistantBubble = appendMessage("assistant", "");
+      }
+      if (textChunk) {
+        rawAssistantText += textChunk;
+        const visibleText = filterThinkBlocks(rawAssistantText);
+        currentAssistantBubble.innerHTML = renderMarkdown(visibleText);
+        chatContainer.scrollTop = chatContainer.scrollHeight;
+      }
+    }
+
+    function setSendingState(isSending) {
+      sendButton.disabled = isSending;
+      messageInput.disabled = isSending;
+    }
+
+    function startStream(model, message) {
+      if (currentEventSource) {
+        currentEventSource.close();
+        currentEventSource = null;
+      }
+
+      const params = new URLSearchParams();
+      params.append("model", model);
+      params.append("message", message);
+      const apiUrl = apiBase + "?" + params.toString();
+
+      currentAssistantBubble = null;
+      rawAssistantText = "";
+      setSendingState(true);
+
+      const eventSource = new EventSource(apiUrl);
+      currentEventSource = eventSource;
+
+      eventSource.onmessage = function (event) {
+        if (!event.data) {
+          return;
+        }
+
+        let payload;
+        try {
+          payload = JSON.parse(event.data);
+        } catch (e) {
+          return;
+        }
+
+        let item = payload;
+        if (Array.isArray(payload) && payload.length > 0) {
+          item = payload[0];
+        }
+
+        if (!item || !item.result) {
+          return;
+        }
+
+        const output = item.result.output;
+        const metadata = item.result.metadata || {};
+
+        const content = output && typeof output.content === "string" ? output.content : "";
+        if (content) {
+          updateAssistantBubble(content);
+        }
+
+        if (metadata.finishReason === "STOP") {
+          eventSource.close();
+          currentEventSource = null;
+          setSendingState(false);
+        }
+      };
+
+      eventSource.onerror = function () {
+        if (currentEventSource) {
+          currentEventSource.close();
+          currentEventSource = null;
+        }
+        setSendingState(false);
+      };
+    }
+
+    chatForm.addEventListener("submit", function (e) {
+      e.preventDefault();
+      const message = messageInput.value.trim();
+      if (!message) {
+        return;
+      }
+
+      appendMessage("user", message);
+      messageInput.value = "";
+      const model = modelSelect.value;
+      startStream(model, message);
+    });
+
+    if (ragTagSelect) {
+      ragTagSelect.addEventListener("focus", function () {
+        loadRagTags();
+      });
+      ragTagSelect.addEventListener("click", function () {
+        loadRagTags();
+      });
+    }
+
+    if (sidebar && sidebarToggle) {
+      sidebarToggle.addEventListener("click", function () {
+        if (sidebar.classList.contains("w-56")) {
+          sidebar.classList.remove("w-56");
+          sidebar.classList.add("w-12");
+          if (sidebarTitle) {
+            sidebarTitle.classList.add("hidden");
+          }
+        } else {
+          sidebar.classList.remove("w-12");
+          sidebar.classList.add("w-56");
+          if (sidebarTitle) {
+            sidebarTitle.classList.remove("hidden");
+          }
+        }
+      });
+    }
+
+    if (uploadButton && kbModal) {
+      uploadButton.addEventListener("click", function () {
+        kbModal.classList.remove("hidden");
+        kbModal.classList.add("flex");
+      });
+    }
+
+    if (kbDropArea && uploadInput && kbDropText) {
+      kbDropArea.addEventListener("click", function () {
+        uploadInput.click();
+      });
+
+      uploadInput.addEventListener("change", function () {
+        const files = Array.prototype.slice.call(uploadInput.files || []);
+        if (!files.length) {
+          kbDropText.textContent = "将文件拖到此处或点击上传";
+          return;
+        }
+
+        if (files.length === 1) {
+          kbDropText.textContent = files[0].name;
+        } else {
+          kbDropText.textContent = "已选择 " + files.length + " 个文件";
+        }
+      });
+    }
+
+    if (kbModalClose) {
+      kbModalClose.addEventListener("click", function () {
+        closeKbModal();
+      });
+    }
+
+    if (kbModalSubmit && uploadInput && kbDropText) {
+      kbModalSubmit.addEventListener("click", function () {
+        const ragTagValue =
+          kbModalNameInput && kbModalNameInput.value ? kbModalNameInput.value.trim() : "";
+        const files = Array.prototype.slice.call(uploadInput.files || []);
+
+        if (!ragTagValue) {
+          const originalText = kbModalSubmit.textContent;
+          kbModalSubmit.textContent = "请输入名称";
+          setTimeout(function () {
+            kbModalSubmit.textContent = originalText;
+          }, 1500);
+          return;
+        }
+
+        if (!files.length) {
+          const originalText = kbModalSubmit.textContent;
+          kbModalSubmit.textContent = "请选择文件";
+          setTimeout(function () {
+            kbModalSubmit.textContent = originalText;
+          }, 1500);
+          return;
+        }
+
+        const formData = new FormData();
+        formData.append("ragTag", ragTagValue);
+        files.forEach(function (file) {
+          formData.append("file", file);
+        });
+
+        kbModalSubmit.disabled = true;
+        uploadButton.disabled = true;
+        const originalText = kbModalSubmit.textContent;
+        kbModalSubmit.textContent = "上传中...";
+
+        fetch(uploadUrl, {
+          method: "POST",
+          body: formData
+        })
+          .then(function (res) {
+            if (!res.ok) {
+              throw new Error("upload failed");
+            }
+            return res.json().catch(function () {
+              return {};
+            });
+          })
+          .then(function (data) {
+            const msg =
+              data && data.info
+                ? data.info
+                : "知识库上传成功";
+            kbModalSubmit.textContent = "上传完成";
+            if (kbAlert) {
+              kbAlert.textContent = msg;
+              kbAlert.className =
+                "absolute top-10 left-1/2 -translate-x-1/2 px-4 py-2 rounded-md text-sm shadow bg-emerald-100 text-emerald-700";
+              kbAlert.classList.remove("hidden");
+            }
+          })
+          .catch(function () {
+            kbModalSubmit.textContent = "上传失败";
+            if (kbAlert) {
+              kbAlert.textContent = "知识库上传失败";
+              kbAlert.className =
+                "absolute top-10 left-1/2 -translate-x-1/2 px-4 py-2 rounded-md text-sm shadow bg-rose-100 text-rose-700";
+              kbAlert.classList.remove("hidden");
+            }
+          })
+          .finally(function () {
+            setTimeout(function () {
+              kbModalSubmit.disabled = false;
+              uploadButton.disabled = false;
+              kbModalSubmit.textContent = originalText;
+              closeKbModal();
+            }, 2000);
+          });
+      });
+    }
+  </script>
+</body>
+</html>
