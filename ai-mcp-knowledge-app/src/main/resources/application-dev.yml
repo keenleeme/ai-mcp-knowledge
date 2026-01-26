@@ -1,5 +1,5 @@
 server:
-  port: 8090
+  port: 9990
 
 spring:
   datasource:
@@ -28,15 +28,23 @@ spring:
       # 连接测试query
       connection-test-query: SELECT 1
   ai:
+    mcp:
+      client:
+        request-timeout: 360s
+        stdio:
+          servers-configuration: classpath:/config/mcp-servers-config.json
     ollama:
-      base-url: http://117.72.96.184:11434
+      base-url: http://127.0.0.1:11434
+#      base-url: http://129.204.5.208:11434
       embedding:
         options:
           num-batch: 768
         model: nomic-embed-text
     openai:
-      base-url: https://apis.itedus.cn
-      api-key: sk-TBjtLIwGhmJo6fhp58CdFd0818884713947c5e8503A64e8b
+#      base-url: https://apis.itedus.cn
+      base-url: https://dashscope.aliyuncs.com/compatible-mode
+      api-key: sk-4c4dadd0534b4c6eb44294a878880025
+#      api-key: sk-TBjtLIwGhmJo6fhp58CdFd0818884713947c5e8503A64e8b
       embedding:
         options:
           model: text-embedding-ada-002

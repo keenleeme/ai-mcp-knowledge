@@ -13,6 +13,12 @@
 
     <dependencies>
         <dependency>
+            <groupId>cn.xpeanut.mcp</groupId>
+            <artifactId>ai-mcp-knowledge-trigger</artifactId>
+            <version>1.0</version>
+        </dependency>
+
+        <dependency>
             <groupId>org.springframework.boot</groupId>
             <artifactId>spring-boot-starter-web</artifactId>
         </dependency>

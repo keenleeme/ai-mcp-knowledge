@@ -1,0 +1,1 @@
+26-01-16.09:29:02.948 [main            ] WARN  OllamaApi              - [404] Not Found - {"error":"model \"qwen3\" not found, try pulling it first"}

@@ -1,0 +1,15 @@
+{
+  "mcpServers": {
+    "mcp-server-csdn": {
+      "command": "C:\\Users\\Administrator\\.jdks\\jbr-17.0.14\\bin\\java.exe",
+      "args": [
+        "-Dspring.ai.mcp.server.stdio=true",
+        "-Dfile.encoding=utf-8",
+        "-jar",
+        "D:\\workspace\\mcp-server-csdn\\target\\mcp-server-csdn-1.0.0.jar",
+        "--csdn.api.categories=Java编程学习宝典",
+        "--csdn.api.cookie=uuid_tt_dd=10_19420161830-1744356347056-935909; fid=20_08826086389-1744356348602-337168; UN=qq5621; __gads=ID=8ed3124ac76411f0:T=1744356348:RT=1754296346:S=ALNI_MaIgZKYYl9j5m3D7QlHxoCflNrxLQ; __gpi=UID=00001099276b43ec:T=1744356348:RT=1754296346:S=ALNI_MYDZ01hpqYfs7YzemNsJt2m7QkcPQ; FCNEC=%5B%5B%22AKsRol8COHJiRxlPJBY7_Uj-9Yqui5jFnilG02Xw6SVlwMI6jmfZrFQNV6LIs_DJhOT-PrPKjRh8re5RS5dqVdYb8lXyfQkTxm7mxoyrVwIztJLx4zz1rzagV_xpe6Q9hZwX7WyAffq0lH4LlukjACOm5Q6g53KOkA%3D%3D%22%5D%5D; Hm_ct_6bcd52f51e9b3dce32bec4a3997715ac=6525*1*10_19420161830-1744356347056-935909!5744*1*qq5621; c_dl_prid=1754969326061_446946; c_dl_rid=1760161801388_606374; c_dl_fref=https://bbs.csdn.net/topics/604414946; c_dl_fpage=/download/li514006030/77346010; c_dl_um=-; p_uid=U010000; csdn_newcert_qq5621=1; _clck=1h56xk5%5E2%5Eg2i%5E0%5E1927; UserName=qq5621; UserInfo=3637f0b6c5524c3ca23a601d0b3a01f7; UserToken=3637f0b6c5524c3ca23a601d0b3a01f7; UserNick=%E5%83%8F%E5%B0%91%E5%B9%B4%E5%95%A6%E9%A3%9E%E9%A9%B0%E7%82%B9%E3%80%81; AU=F0F; BT=1767777722906; dc_session_id=10_1768465557544.387315; c_first_ref=default; c_first_page=https%3A//www.csdn.net/; c_dsid=11_1768465557838.840031; c_segment=5; c-sidebar-collapse=0; c_ab_test=1; Hm_lvt_6bcd52f51e9b3dce32bec4a3997715ac=1767750954,1768360953,1768465559; HMACCOUNT=F59821951BDC5696; dc_sid=e85434ce8ae45ba392af1dbf11014b47; creative_popup=%7B%22arrowIcon%22%3A%22https%3A//i-operation.csdnimg.cn/images/9a154de8dd9a4f9d82b854213f4c9aec.png%22%2C%22img%22%3A%22https%3A//i-operation.csdnimg.cn/images/4beaf483366f4bb499fa210046cef1a8.png%22%2C%22imgStyle%22%3A%22height%3A%2088px%3B%22%2C%22darkCfg%22%3A%7B%7D%2C%22role%22%3A%22lost%22%2C%22report%22%3A%7B%22spm%22%3A%223001.11122%22%2C%22extra%22%3A%22%22%7D%2C%22style%22%3A%22%22%2C%22arrowIconStyle%22%3A%22%22%2C%22url%22%3A%22https%3A//www.csdn.net/cps/2025summary/%3Futm_source%3D1510165626%22%2C%22newTab%22%3Afalse%2C%22userName%22%3A%22qq5621%22%7D; creative_btn_mp=1; Hm_lpvt_6bcd52f51e9b3dce32bec4a3997715ac=1768465597; c_pref=https%3A//www.csdn.net/; c_ref=https%3A//editor.csdn.net/; c_page_id=default; log_Id_pv=3; log_Id_view=100; log_Id_click=4; dc_tos=t8wcx9"
+      ]
+    }
+  }
+}

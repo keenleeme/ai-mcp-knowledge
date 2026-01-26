@@ -1,7 +1,15 @@
 package cn.xpeanut.knowledge.config;
 
+import io.micrometer.observation.ObservationRegistry;
+import org.springframework.ai.chat.client.ChatClient;
+import org.springframework.ai.chat.client.DefaultChatClientBuilder;
+import org.springframework.ai.ollama.OllamaChatModel;
+import org.springframework.ai.ollama.api.OllamaOptions;
+import org.springframework.ai.openai.OpenAiChatModel;
+import org.springframework.ai.openai.OpenAiChatOptions;
 import org.springframework.ai.openai.OpenAiEmbeddingModel;
 import org.springframework.ai.openai.api.OpenAiApi;
+import org.springframework.ai.tool.ToolCallbackProvider;
 import org.springframework.ai.transformer.splitter.TokenTextSplitter;
 import org.springframework.ai.vectorstore.SimpleVectorStore;
 import org.springframework.ai.vectorstore.pgvector.PgVectorStore;
@@ -51,6 +59,17 @@ public class OpenAiConfig {
         OpenAiEmbeddingModel embeddingModel = new OpenAiEmbeddingModel(openAiApi);
         return PgVectorStore.builder(jdbcTemplate, embeddingModel)
                 .vectorTableName("vector_store_openai")
+                .build();
+    }
+
+    @Bean
+    public ChatClient chatClient(OpenAiChatModel openAiChatModel, ToolCallbackProvider tools) {
+        DefaultChatClientBuilder defaultChatClientBuilder = new DefaultChatClientBuilder(openAiChatModel, ObservationRegistry.NOOP, null);
+        return defaultChatClientBuilder
+                .defaultTools(tools)
+                .defaultOptions(OpenAiChatOptions.builder()
+                        .model("qwen-plus")
+                        .build())
                 .build();
     }
 
