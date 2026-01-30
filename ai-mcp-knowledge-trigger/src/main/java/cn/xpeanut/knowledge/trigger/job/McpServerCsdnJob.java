@@ -17,15 +17,15 @@ public class McpServerCsdnJob {
     public void exec() {
         // 检查当前时间是否在允许执行的时间范围内（8点到23点之间）
         int currentHour = java.time.LocalDateTime.now().getHour();
-        if (currentHour >= 23 || currentHour < 8) {
-            log.info("当前时间 {}点 不在任务执行时间范围内，跳过执行", currentHour);
-            return;
-        }
+//        if (currentHour >= 23 || currentHour < 8) {
+//            log.info("当前时间 {}点 不在任务执行时间范围内，跳过执行", currentHour);
+//            return;
+//        }
         try {
             String userInput = """
                     我需要你帮我生成一篇面向编程小白的技术栈学习文章，要求如下：
                     
-                    1. 文章围绕某一种具体技术栈展开（例如 Spring Boot、Redis、Kafka 等），目标是帮助读者在较短时间内完成从“是什么、能做什么”到“能自己上手开发”的完整学习闭环。
+                    1. 文章围绕某一种具体技术栈展开（例如 JVM、MyBatis、Spring Cloud、Docker、Jenkins、Hadoop、Spark、Elasticsearch、Flink、RabbitMQ、Flyway、Prometheus、OAuth2 等），目标是帮助读者在较短时间内完成从“是什么、能做什么”到“能自己上手开发”的完整学习闭环。
                        可选技术栈如下：
                           核心语言与平台: Java SE (8/11/17), Jakarta EE (Java EE), JVM
                           构建工具: Maven, Gradle, Ant
